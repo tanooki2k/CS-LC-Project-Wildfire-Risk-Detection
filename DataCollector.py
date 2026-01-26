@@ -6,7 +6,7 @@ from random import randint
 
 
 class DataCollector:
-    __converter = lambda _, dicts: [tuple([int(val) for _, val in elem.items()]) for elem in dicts]
+    __converter = lambda _, dicts, value_fieldnames: [tuple([int(val) for key, val in elem.items() if key in value_fieldnames]) for elem in dicts]
 
     def __init__(self, filename: str, fieldnames: List[str], data_type = None):
         if data_type is None or data_type.lower() not in ["digital", "analog"]:
@@ -15,9 +15,9 @@ class DataCollector:
         self.__filename = filename
         self.__fieldnames = fieldnames
         self.__database = DataManagerCSV(filename, fieldnames)
+        self.__grapher = []
 
         raw_data = self.__database.read()
-        print(raw_data)
         data = self.__converter(raw_data)
         if data_type == "digital":
             self.__grapher = DigitalGraph(data) if data else DigitalGraph()
