@@ -39,9 +39,12 @@ class SerialReader:
                     print(final_record)
 
 
-    def read(self):
-        thread = Thread(target=self.process_data, daemon=True)
-        thread.start()
+    def read(self, func):
+        data_thread = Thread(target=self.process_data, daemon=True)
+        database_thread = Thread(target=self.process_data, daemon=True)
+
+        data_thread.start()
+        database_thread.start()
 
         start_time = time.time()
         raw_record = []
@@ -62,4 +65,4 @@ class SerialReader:
 
 if __name__ == "__main__":
     serial = SerialReader(10, 4, ["utc", "temperature", "moisture"], r"^[0-9]+,[0-9]+$")
-    serial.read()
+    serial.read(lambda : None)

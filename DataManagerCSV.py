@@ -14,7 +14,7 @@ class DataManagerCSV(FileManager):
         else:
             fieldnames_stored = self.read_fieldnames()
             if fieldnames_stored != self.__fieldnames:
-                raise ValueError("The fieldnames provided does not match with the CSV fieldnames!")
+                raise ValueError(f"The fieldnames provided does not match with the CSV fieldnames!")
             
     def __repr__(self):
         return f"<DataManagerCSV path: `{self.__path}`, fieldnames:`{self.__fieldnames}`>"
