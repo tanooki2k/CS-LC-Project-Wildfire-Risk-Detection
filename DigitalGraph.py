@@ -20,7 +20,12 @@ class DigitalGraph(MatplotlibGraph):
             else:
                 self.new_record(elem)
 
-    def new_record(self, record) -> None:
+    def new_record(self, queue_record) -> None:
+        record = []
+        while not queue_record.empty():
+            elem = queue_record.get()
+            record.append(elem)
+
         if len(record) != 2:
             raise ValueError("Argument list `record` must have length 2")
 

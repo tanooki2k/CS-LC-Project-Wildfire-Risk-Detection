@@ -7,8 +7,6 @@ from random import randint
 
 
 class DataCollector:
-    __converter = lambda _, dicts, value_fieldnames: [tuple([int(val) for key, val in elem.items() if key in value_fieldnames]) for elem in dicts]
-
     def __init__(self, filename: str, fieldnames: List[str], pairs_fieldnames: List[Tuple[str, str]], data_type = None):
         if data_type is None or data_type.lower() not in ["digital", "analog"]:
             raise ValueError("Data type must be 'digital' or 'analog'")
@@ -43,6 +41,9 @@ class DataCollector:
         for r in valid_records:
             self.__grapher.new_record(r)
 
+    @staticmethod
+    def __converter(data) -> Dict[str, str]:
+        pass
 
 if __name__ == "__main__":
     numbers_data = DataCollector("data", ["t", "x", "y"], [("t", "x"), ("t", "y"), ("x", "y")], "analog")
