@@ -1,3 +1,9 @@
+"""
+This module is not relevant for the project itself, but it has allowed me to test that the
+AnalogGraph class is working correctly.
+"""
+
+
 def float_range(start: float, stop: float, step: float):
     cond = False
     if start > stop:

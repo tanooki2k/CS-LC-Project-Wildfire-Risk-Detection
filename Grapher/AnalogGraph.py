@@ -1,7 +1,6 @@
 from typing import Tuple
 from matplotlib.pyplot import plot, show
 from Grapher.Graphing import MatplotlibGraph
-from Tools.FloatRange import float_range
 
 
 class AnalogGraph(MatplotlibGraph):
@@ -44,6 +43,7 @@ class AnalogGraph(MatplotlibGraph):
 
 
 if __name__ == '__main__':
+    from Tools.FloatRange import float_range
     from queue import Queue
     from math import sin
 
