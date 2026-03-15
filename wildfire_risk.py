@@ -63,6 +63,8 @@ def main():
             serial_reader.read(lambda: None)
     else:
         print("The program has been initialised as Simulation mode.")
+        # 20260315_162100.png
+
 
 if __name__ == "__main__":
     try:

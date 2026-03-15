@@ -1,5 +1,5 @@
 import os.path
-from typing import List, Tuple, Dict, Union
+from typing import List, Tuple, Dict, Union, Any
 from csv import DictWriter, DictReader
 from DataBases.FileManager import FileManager
 
@@ -36,7 +36,7 @@ class DataManagerCSV(FileManager):
             fieldnames = list(next(reader).keys())
         return fieldnames
     
-    def write(self, *records: Dict[str, str], validate: bool = True) -> Union[None, List[Tuple[int, int]]]:
+    def write(self, *records: Dict[str, Any], validate: bool = True) -> Union[None, List[Tuple[int, int]]]:
         valid_data = []
 
         with open(self.__path, "a") as csv_file:

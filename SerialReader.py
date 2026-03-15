@@ -46,7 +46,7 @@ class SerialReader:
 
     def read(self, func):
         data_thread = Thread(target=self.process_data, daemon=True)
-        database_thread = Thread(target=self.process_data, daemon=True)
+        database_thread = Thread(target=func, daemon=True)
 
         data_thread.start()
         database_thread.start()
