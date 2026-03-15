@@ -16,7 +16,6 @@ class DataCollector:
         self.__database = DataManagerCSV(filename, fieldnames)
 
         raw_data = self.__database.read()
-        print(raw_data)
         data = convert_data(raw_data, pairs_fieldnames)
         self.__grapher = [
             AnalogGraph(fieldnames=pairs_fieldnames[0], data=data[0]),
@@ -34,12 +33,12 @@ class DataCollector:
             self.__start_time = time.time()
 
     def new_record(self, *record: Dict[str, str]) -> None:
-        valid_records = self.__database.write(*record, validate=False)
+        self.__database.write(*record, validate=False)
 
-        for r in valid_records:
-            print(r)
+        for r in record:
             for g in self.__grapher:
-                g.new_record(r)
+                new_record = [r[k] for k in g.fieldnames]
+                g.new_record(new_record)
 
 
 if __name__ == "__main__":

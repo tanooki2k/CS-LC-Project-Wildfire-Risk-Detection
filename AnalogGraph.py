@@ -27,7 +27,6 @@ class AnalogGraph(MatplotlibGraph):
             raise ValueError("Argument list `record` must have length 2")
 
         new_x, new_y = record
-        print(record)
         self.x.append(new_x)
         self.y.append(new_y)
 
