@@ -1,3 +1,4 @@
+import os
 from typing import Tuple
 from datetime import datetime
 from random import randint
@@ -52,14 +53,17 @@ class DigitalGraph(MatplotlibGraph):
         self.plot()
 
         if can_save:
-            self.save("../Output/")
+            output_path = os.path.join("..", "Output")
+            self.save(output_path)
         show()
 
     @staticmethod
     def save(path, ext="png"):
         now = datetime.now()
         formatted = now.strftime("%Y%m%d_%H%M%S")
-        savefig(path + formatted + "." + ext)
+
+        output_path = os.path.join(path, formatted + ext)
+        savefig(output_path)
 
 
 if __name__ == '__main__':
