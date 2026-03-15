@@ -24,7 +24,6 @@ class AnalogGraph(MatplotlibGraph):
 
     def new_record(self, record) -> None:
         if len(record) != 2:
-            print(record)
             raise ValueError("Argument list `record` must have length 2")
 
         new_x, new_y = record
@@ -35,7 +34,7 @@ class AnalogGraph(MatplotlibGraph):
     def plot(self) -> None:
         plot(self.x, self.y)
 
-    def show(self, record= None) -> None:
+    def show(self, record = None) -> None:
         if record is None:
             self.plot()
             show()

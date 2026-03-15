@@ -2,7 +2,7 @@ import time
 from typing import List, Dict, Tuple
 from DataManagerCSV import DataManagerCSV
 from AnalogGraph import AnalogGraph
-# from DigitalGraph import DigitalGraph
+from DigitalGraph import DigitalGraph
 from data_convertor import convert_data
 from random import randint
 
@@ -18,8 +18,10 @@ class DataCollector:
         raw_data = self.__database.read()
         print(raw_data)
         data = convert_data(raw_data, pairs_fieldnames)
-        # self.__grapher = [AnalogGraph(data[0]), DigitalGraph(data[1])]
-        self.__grapher = [AnalogGraph(fieldnames=pairs_fieldnames[0], data=data[0])]
+        self.__grapher = [
+            AnalogGraph(fieldnames=pairs_fieldnames[0], data=data[0]),
+            DigitalGraph(fieldnames=pairs_fieldnames[1], data=data[1])
+        ]
 
     def read(self):
         return self.__database.read()
@@ -32,9 +34,10 @@ class DataCollector:
             self.__start_time = time.time()
 
     def new_record(self, *record: Dict[str, str]) -> None:
-        valid_records = self.__database.write(*record, validate=True)
+        valid_records = self.__database.write(*record, validate=False)
 
         for r in valid_records:
+            print(r)
             for g in self.__grapher:
                 g.new_record(r)
 

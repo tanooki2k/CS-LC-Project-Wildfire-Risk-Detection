@@ -1,5 +1,5 @@
+from typing import Tuple
 from random import randint
-from typing import List, Tuple, Any
 from matplotlib.pyplot import plot, show
 from Graphing import MatplotlibGraph
 
@@ -7,25 +7,26 @@ from Graphing import MatplotlibGraph
 class DigitalGraph(MatplotlibGraph):
     x, y = [], []
 
-    def __init__(self, data: List[Tuple[Any, Any]] = None) -> None:
-        for elem in data:
-            if len(elem) != 2:
+    def __init__(self, fieldnames: Tuple[str, str], data = None) -> None:
+        self.fieldnames = fieldnames
+
+        while not data.empty():
+            row = data.get()
+            record = []
+            while not row.empty():
+                elem = row.get()
+                record.append(elem)
+
+            if len(record) != 2:
                 raise ValueError("All elements must be pairs `(x, y)`")
 
-        first_elem = data[0]
-        for elem in data:
-            if elem == first_elem:
-                self.x.append(elem[0])
-                self.y.append(elem[1])
+            if len(self.x) == len(self.y) == 0:
+                self.x.append(record[0])
+                self.y.append(record[1])
             else:
-                self.new_record(elem)
+                self.new_record(record)
 
-    def new_record(self, queue_record) -> None:
-        record = []
-        while not queue_record.empty():
-            elem = queue_record.get()
-            record.append(elem)
-
+    def new_record(self, record) -> None:
         if len(record) != 2:
             raise ValueError("Argument list `record` must have length 2")
 
@@ -52,9 +53,20 @@ class DigitalGraph(MatplotlibGraph):
 
 
 if __name__ == '__main__':
-    n = 10
-    x = [i for i in range(n + 1)]
-    y = [randint(0, 1) for _ in range(n + 1)]
+    from queue import Queue
 
-    graph = DigitalGraph(list(zip(x, y)))
+    data_queue = Queue()
+
+    n = 10
+    x_col = [i for i in range(n + 1)]
+    y_col = [randint(0, 1) for _ in range(n + 1)]
+
+    for i in range(n + 1):
+        new_queue = Queue()
+        new_queue.put(x_col[i])
+        new_queue.put(y_col[i])
+
+        data_queue.put(new_queue)
+
+    graph = DigitalGraph(data=data_queue, fieldnames=("x", "y"))
     graph.show()
