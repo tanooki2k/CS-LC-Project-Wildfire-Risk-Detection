@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
     n = 10
     x_col = [i for i in range(n + 1)]
-    y_col = [randint(0, 1) for _ in range(n + 1)]
+    y_col = [bool(randint(0, 1)) for _ in range(n + 1)]
 
     for i in range(n + 1):
         new_queue = Queue()
