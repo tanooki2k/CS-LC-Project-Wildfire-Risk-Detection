@@ -57,9 +57,15 @@ class DataManagerCSV(FileManager):
     
 
 if __name__ == "__main__":
-    database = DataManagerCSV("names", ["name", "age"])
+    from datetime import datetime
+    from random import randint
 
-    record = {"name": "Mateo", "age": 21}
+    database = DataManagerCSV("test", ["timestamp", "temperature", "moisture", "risk"])
+
+    now = datetime.now()
+    formatted = now.strftime("%Y-%m-%d %H:%M:%S")
+
+    record = {"timestamp": formatted, "temperature": randint(10, 40), "moisture": randint(0, 1), "risk": randint(0, 100)}
     database.write(record)
     print(database.read())
     print(database)

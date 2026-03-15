@@ -50,4 +50,5 @@ if __name__ == "__main__":
         {"t": length + i, "x": 2 * (length + i + 1) + 1, "y": 2 * (length + i + 1) + randint(-10, 10)} for i in range(randint(5, 20))
     ]
     numbers_data.new_record(*new_data)
-    numbers_data.plot(0)
+    while True:
+        numbers_data.plot(10)
