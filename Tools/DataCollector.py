@@ -1,9 +1,10 @@
 import time
+import os
 from typing import List, Dict, Tuple
 from DataBases.DataManagerCSV import DataManagerCSV
 from Grapher.AnalogGraph import AnalogGraph
 from Grapher.DigitalGraph import DigitalGraph
-from Tools.data_convertor import convert_data
+from Tools.DataConvertor import convert_data
 from random import randint
 
 
@@ -25,11 +26,11 @@ class DataCollector:
     def read(self):
         return self.__database.read()
 
-    def plot(self, period: float) -> None:
+    def plot(self, period: float, can_save: bool = False) -> None:
         delta = time.time() - self.__start_time
         if delta >= period:
             for g in self.__grapher:
-                g.show()
+                g.show(can_save=can_save)
             self.__start_time = time.time()
 
     def new_record(self, *record: Dict[str, str]) -> None:
@@ -42,13 +43,13 @@ class DataCollector:
 
 
 if __name__ == "__main__":
-    numbers_data = DataCollector("../data", ["t", "x", "y"], [("t", "x"), ("t", "y")])
+    numbers_data = DataCollector(os.path.join("..", "data"), ["t", "x", "y"], [("t", "x"), ("t", "y")])
     length = len(numbers_data.read())
-    numbers_data.plot(0)
+    numbers_data.plot(0, can_save=True)
 
-    new_data = [
-        {"t": length + i, "x": 2 * (length + i + 1) + 1, "y": 2 * (length + i + 1) + randint(-10, 10)} for i in range(randint(5, 20))
-    ]
-    numbers_data.new_record(*new_data)
-    while True:
-        numbers_data.plot(10)
+    # new_data = [
+    #     {"t": length + i, "x": 2 * (length + i + 1) + randint(-10, 10), "y": 2 * (length + i + 1) + randint(-10, 10)} for i in range(randint(5, 20))
+    # ]
+    # numbers_data.new_record(*new_data)
+    # while True:
+    #     numbers_data.plot(10, can_save=True)

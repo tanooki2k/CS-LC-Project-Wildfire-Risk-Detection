@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 from datetime import datetime
 from typing import Tuple
 from matplotlib.pyplot import plot, show, savefig
@@ -41,16 +41,18 @@ class AnalogGraph(MatplotlibGraph):
         self.plot()
 
         if can_save:
-            output_path = os.path.join("..", "Output")
-            self.save(output_path)
+            output_dir = Path("..") / "Output"
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+            self.save(output_dir)
         show()
 
     @staticmethod
-    def save(path, ext="png"):
+    def save(path):
         now = datetime.now()
         formatted = now.strftime("%Y%m%d_%H%M%S")
 
-        output_path = os.path.join(path, formatted + ext)
+        output_path = path / formatted
         savefig(output_path)
 
 

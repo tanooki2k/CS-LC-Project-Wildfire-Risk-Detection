@@ -31,9 +31,9 @@ class DataManagerCSV(FileManager):
         return data
     
     def read_fieldnames(self):
-        with open(self.__path) as csv_file:
-            reader = DictReader(csv_file)
-            fieldnames = list(next(reader).keys())
+        with open(self.__path) as file:
+            reader = file.readline()
+        fieldnames = [key.replace("\n", "") for key in reader.split(",")]
         return fieldnames
     
     def write(self, *records: Dict[str, Any], validate: bool = True) -> Union[None, List[Tuple[int, int]]]:

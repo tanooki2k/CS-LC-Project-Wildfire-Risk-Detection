@@ -15,5 +15,5 @@ class MatplotlibGraph(ABC):
 
     @staticmethod
     @abstractmethod
-    def save(path, ext="png"):
+    def save(path):
         pass
