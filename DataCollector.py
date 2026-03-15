@@ -1,9 +1,9 @@
 import time
 from typing import List, Dict, Tuple
-from DataManagerCSV import DataManagerCSV
-from AnalogGraph import AnalogGraph
-from DigitalGraph import DigitalGraph
-from data_convertor import convert_data
+from DataBases.DataManagerCSV import DataManagerCSV
+from Grapher.AnalogGraph import AnalogGraph
+from Grapher.DigitalGraph import DigitalGraph
+from Tools.data_convertor import convert_data
 from random import randint
 
 

@@ -1,10 +1,10 @@
 from typing import Tuple
+from random import randint
 from matplotlib.pyplot import plot, show
-from Graphing import MatplotlibGraph
-from Tools.FloatRange import float_range
+from Grapher.Graphing import MatplotlibGraph
 
 
-class AnalogGraph(MatplotlibGraph):
+class DigitalGraph(MatplotlibGraph):
     x, y = [], []
 
     def __init__(self, fieldnames: Tuple[str, str], data = None) -> None:
@@ -26,42 +26,48 @@ class AnalogGraph(MatplotlibGraph):
         if len(record) != 2:
             raise ValueError("Argument list `record` must have length 2")
 
+        if len(self.x) == len(self.y) == 0:
+            self.x.append(record[0])
+            self.y.append(record[1])
+            return
+
         new_x, new_y = record
-        self.x.append(new_x)
-        self.y.append(new_y)
+        if self.y[-1] == new_y:
+            self.x.append(new_x)
+            self.y.append(new_y)
+        else:
+            for _ in range(2):
+                self.x.append(new_x)
+            self.y.append(self.y[-1])
+            self.y.append(new_y)
 
     def plot(self) -> None:
         plot(self.x, self.y)
 
-    def show(self, record = None) -> None:
+    def show(self, record= None) -> None:
         if record is None:
             self.plot()
             show()
         else:
             self.new_record(record)
-            self.plot()
             show()
 
 
 if __name__ == '__main__':
     from queue import Queue
-    from math import sin
 
     data_queue = Queue()
 
-    t = [num for num in float_range(-10, 10, 0.001)]
-    func_x = lambda x: sin(x)
-    func_y = lambda y: y ** 2
+    n = 10
+    x_col = [i for i in range(n + 1)]
+    y_col = [randint(0, 1) for _ in range(n + 1)]
 
-    x_col = [func_x(i) for i in t]
-    y_col = [func_y(j) for j in t]
-
-    for i in range(len(t)):
+    for i in range(n + 1):
         new_queue = Queue()
         new_queue.put(x_col[i])
         new_queue.put(y_col[i])
 
         data_queue.put(new_queue)
 
-    graph = AnalogGraph(data=data_queue, fieldnames=("x", "y"))
+    graph = DigitalGraph(data=data_queue, fieldnames=("x", "y"))
     graph.show()
