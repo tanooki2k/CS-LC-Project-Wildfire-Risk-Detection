@@ -10,7 +10,7 @@ class DigitalGraph(MatplotlibGraph):
     def __init__(self, fieldnames: Tuple[str, str], data = None) -> None:
         self.fieldnames = fieldnames
 
-        while not data.empty():
+        while data is not None and not data.empty():
             row = data.get()
             record = []
             while not row.empty():
@@ -20,15 +20,16 @@ class DigitalGraph(MatplotlibGraph):
             if len(record) != 2:
                 raise ValueError("All elements must be pairs `(x, y)`")
 
-            if len(self.x) == len(self.y) == 0:
-                self.x.append(record[0])
-                self.y.append(record[1])
-            else:
-                self.new_record(record)
+            self.new_record(record)
 
     def new_record(self, record) -> None:
         if len(record) != 2:
             raise ValueError("Argument list `record` must have length 2")
+
+        if len(self.x) == len(self.y) == 0:
+            self.x.append(record[0])
+            self.y.append(record[1])
+            return
 
         new_x, new_y = record
         if self.y[-1] == new_y:

@@ -10,7 +10,7 @@ class AnalogGraph(MatplotlibGraph):
     def __init__(self, fieldnames: Tuple[str, str], data = None) -> None:
         self.fieldnames = fieldnames
 
-        while not data.empty():
+        while data is not None and not data.empty():
             row = data.get()
             record = []
             while not row.empty():
