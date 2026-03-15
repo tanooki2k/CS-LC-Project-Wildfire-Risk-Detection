@@ -34,8 +34,8 @@ class MultiAxesGraph(MatplotlibGraph):
         self.risk.append(new_risk)
 
     def plot(self):
-        temp_line = self.ax1.plot(self.time, self.temp, label=self.__TEMP_TAG, color="orange")
-        risk_line = self.ax2.plot(self.time, self.risk, label=self.__RISK_TAG, color="blue")
+        temp_line, = self.ax1.plot(self.time, self.temp, label=self.__TEMP_TAG, color="orange")
+        risk_line, = self.ax2.plot(self.time, self.risk, label=self.__RISK_TAG, color="blue")
 
         time_true, time_false, temp_true, temp_false = [], [], [], []
         for i, m in enumerate(self.moist):
@@ -64,7 +64,7 @@ class MultiAxesGraph(MatplotlibGraph):
 
         lines = [temp_line, risk_line, moist_false, moist_true]
         labels = [l.get_label() for l in lines]
-        self.ax1.lenged(lines, labels, loc="upper right")
+        self.ax1.legend(lines, labels, loc="upper right")
 
     def show(self, record=None, can_save: bool = False):
         if record is not None:
@@ -111,4 +111,4 @@ if __name__ == "__main__":
     print(dict_data)
 
     graph = MultiAxesGraph(fieldnames=field, data=dict_data)
-    graph.show()
+    graph.show(can_save=True)
