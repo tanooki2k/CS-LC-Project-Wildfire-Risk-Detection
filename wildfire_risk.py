@@ -22,9 +22,9 @@ def main():
     )
 
     parser.add_argument(
-        "-tu, --time-units",
+        "-tu", "--time_units",
         choices=["hours", "minutes", "seconds"],
-        default="hours",
+        default="seconds",
         required=False,
         help="Select the time units for interval and savefig (hours, minutes or seconds) (default: hours)"
     )
@@ -37,14 +37,14 @@ def main():
 
     parser.add_argument(
         "-i", "--interval",
-        type=int,
-        default=24,
+        type=float,
+        default=30,
         help="Sampling interval in hours (default: 24)"
     )
 
     parser.add_argument(
         "-s", "--savefig",
-        type=int,
+        type=float,
         required=False,
         help="Saving graph image in hours (default: 24)"
     )
@@ -73,12 +73,26 @@ def main():
         start_simulation_mode(args)
 
 
+def seconds_convertor(val: int, unit: str) -> float:
+    if unit == "seconds":
+        return val
+    elif unit == "minutes":
+        return val * 60
+    else:
+        return val * 3600
+
+
 def start_realtime_mode(args: Namespace):
     fieldnames = ["utc", "temperature", "moisture", "risk"]
     is_digital = [None, False, True, False]
 
+    serial_period = seconds_convertor(args.interval, args.time_units)
+    graph_period = None
+    if args.savefig:
+        graph_period = seconds_convertor(args.savefig, args.time_units)
+
     try:
-        serial_reader = SerialReader(serial_period=10, serial_epsilon=1, graph_period=15, fieldnames=list(zip(fieldnames, is_digital)),
+        serial_reader = SerialReader(serial_period=serial_period, serial_epsilon=serial_period * (3 / 5), graph_period=graph_period, fieldnames=list(zip(fieldnames, is_digital)),
                                      expr=r"^[0-9]+,[0-9]+$", verbose=args.verbose)
     except ValueError:
         print("The embedded system (micro:bit) has not been connected.")

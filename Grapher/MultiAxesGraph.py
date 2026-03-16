@@ -21,6 +21,7 @@ class MultiAxesGraph(MatplotlibGraph):
         self.ax1.tick_params(axis="x", rotation=30)
         self.ax1.set_title(title)
         self.ax1.xaxis.set_major_formatter(m_dates.DateFormatter('%Y-%m-%d %H:%M:%S'))
+        self.ax1.xaxis.set_major_locator(m_dates.DayLocator(interval=7))
         self._ax2 = self.ax1.twinx()
         self._fieldnames = fieldnames
         self._verbose = verbose
@@ -90,7 +91,7 @@ class MultiAxesGraph(MatplotlibGraph):
 
         lines = [temp_line, risk_line, moist_false, moist_true]
         labels = [l.get_label() for l in lines]
-        self.ax1.legend(lines, labels, loc="upper right", zorder=5)
+        self.ax1.legend(lines, labels, loc="upper right")
 
     def show(self, record=None, can_save: bool = False, path:str =""):
         if record is not None:
