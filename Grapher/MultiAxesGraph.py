@@ -7,7 +7,7 @@ from Grapher.Graphing import MatplotlibGraph
 
 class MultiAxesGraph(MatplotlibGraph):
     time, temp, moist, risk = [], [], [], []
-    __TIME_TAG = "TIme (hours)"
+    __TIME_TAG = "Time (hours)"
     __TEMP_TAG = "Temperature (°C)"
     __RISK_TAG = "Risk (0% - 100%)"
 
@@ -18,6 +18,9 @@ class MultiAxesGraph(MatplotlibGraph):
         self.fig, self.ax1 = plt.subplots()
         self.ax2 = self.ax1.twinx()
         self.fieldnames = fieldnames
+
+        self.ax1.set_ylim(10, 40)
+        self.ax2.set_ylim(0, 100)
 
         self.ax1.set_xlabel(self.__TIME_TAG)
         self.ax1.set_ylabel(self.__TEMP_TAG)

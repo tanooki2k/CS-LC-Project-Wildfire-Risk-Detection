@@ -61,13 +61,17 @@ def main():
     else:
         print("The program has been initialised as Simulation mode.")
         print(f"Reading data from: {args.dataset}")
-        read_dataset(args.dataset, [False, False, True, False], args.verbose)
-
+        try:
+            read_dataset(args.dataset, [None, False, True, False], args.verbose)
+        except FileNotFoundError:
+            print("Your file has not been found, please, make sure that it exists!")
+        except ValueError:
+            print("Your file is empty, please, fill anything!")
 
 
 if __name__ == "__main__":
     try:
         main()
-    except KeyboardInterrupt or SerialException:
+    except KeyboardInterrupt:
         print()
-        print("Program finished!")
+    print("Program finished!")
