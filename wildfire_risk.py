@@ -64,9 +64,6 @@ def main():
         print("Verbose mode enabled")
         print(f"Current mode is {args.mode}")
 
-
-    print(f"Sampling interval: {args.interval} hours")
-
     if args.mode == "realtime":
         start_realtime_mode(args)
     else:
@@ -91,8 +88,15 @@ def start_realtime_mode(args: Namespace):
     if args.savefig:
         graph_period = seconds_convertor(args.savefig, args.time_units)
 
+    if args.verbose:
+        print(f"Generating one record per {serial_period} seconds")
+        if graph_period:
+            print(f"Generating one image per {graph_period} seconds")
+        else:
+            print("No graphs will be printed")
+
     try:
-        serial_reader = SerialReader(serial_period=serial_period, serial_epsilon=serial_period * (3 / 5), graph_period=graph_period, fieldnames=list(zip(fieldnames, is_digital)),
+        serial_reader = SerialReader(serial_period=serial_period, graph_period=graph_period, fieldnames=list(zip(fieldnames, is_digital)),
                                      expr=r"^[0-9]+,[0-9]+$", verbose=args.verbose)
     except ValueError:
         print("The embedded system (micro:bit) has not been connected.")

@@ -20,8 +20,14 @@ class MultiAxesGraph(MatplotlibGraph):
         self._fig, self.ax1 = plt.subplots(figsize=(10, 5))
         self.ax1.tick_params(axis="x", rotation=30)
         self.ax1.set_title(title)
+
+        locator = m_dates.AutoDateLocator(minticks=3, maxticks=7)
+        formatter = m_dates.ConciseDateFormatter(locator)
+
         self.ax1.xaxis.set_major_formatter(m_dates.DateFormatter('%Y-%m-%d %H:%M:%S'))
-        self.ax1.xaxis.set_major_locator(m_dates.DayLocator(interval=7))
+        self.ax1.xaxis.set_major_locator(locator)
+        self.ax1.xaxis.set_major_formatter(formatter)
+
         self._ax2 = self.ax1.twinx()
         self._fieldnames = fieldnames
         self._verbose = verbose

@@ -16,7 +16,7 @@ class SerialReader(Subject):
     _observers: List[Observer] = []
     _graph_observers: List[GraphObserver] = []
 
-    def __init__(self, serial_period: float, serial_epsilon: float, fieldnames: List[Tuple[str, bool]], expr: str, verbose: bool = False, graph_period: float = None):
+    def __init__(self, serial_period: float, fieldnames: List[Tuple[str, bool]], expr: str, verbose: bool = False, graph_period: float = None):
         port = mb_detect.find()
 
         if port:
@@ -24,7 +24,6 @@ class SerialReader(Subject):
         else:
             raise ValueError("Serial port not found!")
         self.serial_period = serial_period
-        self.serial_epsilon = serial_epsilon
         self.graph_period = graph_period
         self.expr = expr
         self.__is_digital = [d for _, d in fieldnames]
@@ -102,5 +101,5 @@ class SerialReader(Subject):
 
 
 if __name__ == "__main__":
-    serial = SerialReader(10, 4, [("utc", False), ("temp", False), ("moist", True), ("risk", False)], r"^[0-9]+,[0-9]+$")
+    serial = SerialReader(10, [("utc", False), ("temp", False), ("moist", True), ("risk", False)], r"^[0-9]+,[0-9]+$")
     serial.read()
