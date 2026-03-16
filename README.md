@@ -195,10 +195,10 @@ The difference between them is the **moisture threshold used to detect moisture*
 
 The wildfire risk model uses **two inputs**:
 
-- **Temperature** (analog value in °C)
-- **Moisture presence** (digital value)
+- **Temperature** \(T\) in degrees Celsius (analog input)
+- **Moisture presence** \(M\) (digital input)
 
-Although soil moisture is normally better measured as an **analog value**, the project requirements required it to be used as a **digital input**.
+Although soil moisture is normally measured more accurately as an **analog value**, the project requirements required it to be implemented as a **digital input**.
 
 ---
 
@@ -206,27 +206,35 @@ Although soil moisture is normally better measured as an **analog value**, the p
 
 ### 1️⃣ Temperature Factor
 
-The temperature factor is calculated and **clamped between 0 and 1**.
+The temperature factor is calculated and **clamped between 0 and 1**:
 
-```latex
-T_f = \text{clamp}\left(\frac{T - 10}{30}, 0, 1\right)
-```
+$$
+T_f = \max\left(0,\ \min\left(1,\ \frac{T - 10}{30}\right)\right)
+$$
 
 Where:
 
-- \(T\) = temperature in °C
+- \(T\) = temperature in °C  
+- \(T_f\) = normalized temperature factor
+
+This means:
+
+- Temperatures below **10 °C** produce very low wildfire risk.
+- Temperatures above **40 °C** reach the maximum temperature contribution.
 
 ---
 
 ### 2️⃣ Moisture Factor
 
-```latex
+The moisture factor adjusts the wildfire risk depending on soil conditions:
+
+$$
 M_f =
 \begin{cases}
 0.6 & \text{if moisture is present} \\
 1.0 & \text{if the environment is dry}
 \end{cases}
-```
+$$
 
 Dry conditions increase wildfire risk.
 
@@ -234,24 +242,30 @@ Dry conditions increase wildfire risk.
 
 ### 3️⃣ Final Wildfire Risk
 
-```latex
-Risk = T_f \times M_f \times 100
-```
+The wildfire risk percentage is calculated as:
 
-The result is expressed as a **percentage risk value**.
+$$
+R = T_f \times M_f \times 100
+$$
+
+Where:
+
+- \(R\) = wildfire risk percentage  
+- \(T_f\) = temperature factor  
+- \(M_f\) = moisture factor  
 
 ---
 
 ### 4️⃣ Risk Classification
 
-The model converts the percentage into four categories:
+The resulting percentage is converted into four **risk levels**:
 
 - **Low**
 - **Moderate**
 - **High**
 - **Very High**
 
-The program returns **both the percentage and the risk level**.
+The model returns **both the risk percentage and the risk category**.
 
 ---
 
