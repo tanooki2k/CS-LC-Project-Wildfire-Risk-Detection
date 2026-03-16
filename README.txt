@@ -1,35 +1,213 @@
-# README.txt
+# Wildfire Risk Detection Model
+
+This repository contains my **Leaving Cert Computer Science project**.  
+The project focuses on **nature and the environment**, specifically on **wildfire risk detection**.
+
+The program reads environmental data (temperature and soil moisture) and calculates a **wildfire risk level** using a simple model. It can run either with **real data from a Micro:Bit** or using **simulated datasets**.
 
 ---
 
-## Input Datasets
-The first four datasets (located in the Input folder) are used to answer the following “What-if” scenarios:
+# Running the Program
 
-1. Dataset 1: What if high temperatures and low soil moisture?
-2. Dataset 2: What if low temperatures and high soil moisture?
-3. Dataset 3: What if mild temperatures and high soil moisture?
-4. Dataset 4: What if mild temperatures and low soil moisture?
+The main program is **`wildfire_risk`**.
 
-You can add more datasets to explore additional scenarios. The app can then be run in simulation mode, allowing you to select any new dataset to test different conditions.
+- If you run it directly from a **terminal or IDE**, it starts in **Real-Time mode**.
+- **Simulation mode** can only be selected when running from the **terminal**.
+
+## Command Line Arguments
+
+```
+python wildfire_risk.py [options]
+```
+
+Available options:
+
+| Argument | Description |
+|--------|-------------|
+| `-m`, `--mode` | Select the mode: `realtime` or `simulation` (default: `realtime`) |
+| `-tu`, `--time_units` | Time units for interval and save operations: `hours`, `minutes`, `seconds` |
+| `-d`, `--dataset` | Dataset file used in simulation mode |
+| `-i`, `--interval` | Sampling interval (default: `30`) |
+| `-s`, `--savefig` | Interval for saving graph images |
+| `-v`, `--verbose` | Enable verbose output |
+
+Example:
+
+```
+python wildfire_risk.py -m simulation -d dataset1.csv
+```
 
 ---
 
-## Micro:Bit Directory Overview
-This directory (Micro:Bit) stores the code used by the Micro:Bit.
+# Program Workflow
 
-It contains:
-- A Python sample script
-- Two ready-to-use `.hex` files for uploading to the Micro:Bit
+In **Real-Time mode**, the system operates in the following sequence:
+
+```
+wildfire_risk
+   ↓
+SerialReader
+   ↓
+DataManagerCSV
+   ↓
+MultiAxesGraph
+```
+
+1. **SerialReader** receives data from the Micro:Bit through USB serial.
+2. **DataManagerCSV** stores and retrieves records from a CSV database.
+3. **MultiAxesGraph** visualises the collected data using graphs.
 
 ---
 
-## Hex File Differences
-The two `.hex` files differ in the threshold used to detect moisture:
+# Project Structure
 
-1. microbit-test-at-home.hex
-   - A moisture level higher than 30 is enough to detect moisture.
+The project is divided into modules and directories to keep the code organised and encapsulate functionality.
 
-2. microbit-Wildfire-Risk-Detection.hex
-   - A moisture level higher than 300 is enough to detect moisture.
+## Databases
+
+Contains **`DataManagerCSV`**, responsible for:
+
+- Reading data from a CSV file
+- Writing new records to the database
+
+---
+
+## Graph
+
+Contains **`MultiAxesGraph`**, used by the main program to display graphs using **Matplotlib**.
+
+Note:  
+`AnalogGraph` and `DigitalGraph` are included but not used.  
+They were part of an earlier design before the graph system was redesigned.
+
+---
+
+## Input
+
+This directory stores datasets used in **simulation mode**.
+
+The first four datasets correspond to these *What-If* scenarios:
+
+1. High temperatures and **low soil moisture**
+2. Low temperatures and **high soil moisture**
+3. Mild temperatures and **high soil moisture**
+4. Mild temperatures and **low soil moisture**
+
+You can add more datasets here and run them in **simulation mode**.
+
+---
+
+## Microbit
+
+This directory contains the code used by the **Micro:Bit**.
+
+It includes:
+
+- A **Python sample**
+- Two ready-to-use `.hex` files
+
+### Hex Files
+
+**microbit-test-at-home.hex**
+
+- Moisture detected when level **> 30**
+
+**microbit-Wildfire-Risk-Detection.hex**
+
+- Moisture detected when level **> 300**
+
+The difference between these files is the **moisture threshold used to detect moisture**.
+
+---
+
+## Model
+
+This directory contains the **wildfire risk model**.
+
+For simplicity, the model uses:
+
+- **Temperature** (analog input)
+- **Moisture presence** (digital input)
+
+Although measuring soil moisture as an **analog value** would provide higher accuracy, the project requirements required using a **digital value**.
+
+### Model Calculation
+
+Inputs:
+
+- Temperature \(T\) in °C
+- Moisture presence \(M\) (True / False)
+
+Step 1 – Temperature Factor:
+
+\[
+T_f = \text{clamp}\left(\frac{T - 10}{30}, 0, 1\right)
+\]
+
+Step 2 – Moisture Factor:
+
+\[
+M_f =
+\begin{cases}
+0.6 & \text{if moisture present} \\
+1.0 & \text{if dry}
+\end{cases}
+\]
+
+Step 3 – Wildfire Risk:
+
+\[
+Risk = T_f \times M_f \times 100
+\]
+
+The resulting value is converted into a **risk category**:
+
+- Low
+- Moderate
+- High
+- Very High
+
+The model returns **both the percentage risk and the risk level**.
+
+---
+
+## Output
+
+This directory stores **all images generated by the program**.
+
+Files are saved using the format:
+
+```
+YYMMDD_HMS
+```
+
+This format automatically sorts images **chronologically**.
+
+---
+
+## Tools
+
+This directory contains reusable tools that could be used in other projects.
+
+### SerialReader
+Communicates with the **Micro:Bit via USB serial**, generates new records, and sends them to the wildfire model.
+
+### DataCollector
+An older version of the data collection system used before the final implementation with the **Observer Design Pattern**.
+
+### DataSetReader
+Reads datasets and generates graphs during **simulation mode**.
+
+---
+
+## What-If Simulation Output
+
+This directory contains **six example graphs generated by the program**.
+
+- Two graphs are **random simulations**
+- One is an **extreme edge case** where temperature changes abruptly
+- The other **four graphs correspond to the four What-If scenarios**
+
+These graphs demonstrate how the wildfire risk model behaves under different environmental conditions.
 
 ---
