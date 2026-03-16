@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 wildfire_risks = (
     (25, "low"),
@@ -7,18 +7,29 @@ wildfire_risks = (
     (100, "very high"),
 )
 
-def calculate_wildfire_risk(temp: float, moist: bool) -> Tuple[str, float]:
+def calculate_risk_percentage(temp: float, moist: bool) -> float:
     temp_factor = calculate_temp_factor(temp)
     moist_factor = calculate_moist_factor(moist)
 
     risk = round(temp_factor * moist_factor * 100, 2)
-    risk_mes = ""
-    for val, mes in wildfire_risks:
-        if risk <= val:
-            risk_mes = mes
-            break
+    return risk
 
-    return risk_mes, risk
+
+def calculate_wildfire_risk(temp: float, moist: bool) -> Tuple[str, float]:
+    risk_perc = calculate_risk_percentage(temp, moist)
+    risk_mes = determine_risk_level(risk_perc)
+
+    return risk_mes, risk_perc
+
+
+def determine_risk_level(risk_perc: float) -> Optional[str]:
+    if not (0 <= risk_perc <= 100):
+        raise ValueError(f"Risk percentages is a value between 0 to 100, cannot be {risk_perc}")
+
+    for val, mes in wildfire_risks:
+        if risk_perc <= val:
+            return mes
+    raise
 
 
 def calculate_temp_factor(temp: float) -> float:

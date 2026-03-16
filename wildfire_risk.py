@@ -52,12 +52,12 @@ def main():
 
     if args.mode == "realtime":
         try:
-            serial_reader = SerialReader(10, 4, [("utc", False), ("temp", False), ("moist", True)], r"^[0-9]+,[0-9]+$", args.verbose)
+            serial_reader = SerialReader(10, 4, [("utc", False), ("temperature", False), ("moisture", True), ("risk", False)], r"^[0-9]+,[0-9]+$", args.verbose)
         except ValueError:
             print("The embedded system (micro:bit) has not been connected.")
         else:
             print("The program has been initialised as RealTime mode. Press CTRL+C to quit.")
-            serial_reader.read(lambda: None)
+            serial_reader.read()
     else:
         print("The program has been initialised as Simulation mode.")
         print(f"Reading data from: {args.dataset}")

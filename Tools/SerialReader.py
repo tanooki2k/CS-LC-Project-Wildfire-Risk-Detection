@@ -7,6 +7,7 @@ import time
 import re
 import serial
 import mb_detect
+from Model.wildfire_risk import calculate_wildfire_risk
 
 
 class SerialReader:
@@ -36,20 +37,21 @@ class SerialReader:
 
                 now = datetime.datetime.now()
                 formatted = now.strftime("%Y-%m-%d %H:%M:%S")
-                if len(arrays) == len(self.__fieldnames) - 1:
+                if len(arrays) == len(self.__fieldnames) - 2:
                     process_record = [formatted] + [bool(median(col)) if self.__is_digital[i+1] else int(median(col)) for i, col in enumerate(arrays)]
+                    risk_level, risk_perc = calculate_wildfire_risk(temp=process_record[1], moist=process_record[2])
+                    process_record.append(int(risk_perc))
+
                     final_record =  {key: value for key, value in zip(self.__fieldnames, process_record)}
                     self.processed_data.put(final_record)
                     data_str = ", ".join([f"{f}: {final_record[f]}" for f in self.__fieldnames])
                     print(f"Received record: {data_str}")
+                    print(f"There is a {risk_level} wildfire risk ({int(risk_perc)}%)")
 
 
-    def read(self, func):
+    def read(self):
         data_thread = Thread(target=self.process_data, daemon=True)
-        database_thread = Thread(target=func, daemon=True)
-
         data_thread.start()
-        database_thread.start()
 
         start_time = time.time()
         raw_record = []
@@ -63,12 +65,13 @@ class SerialReader:
                     raw_record.append(data)
             else:
                 if raw_record:
-                    if self.__verb: print(f"Raw Input read: {raw_record}")
-                    print(f"Raw data length: {len(raw_record)}")
+                    if self.__verb:
+                        print(f"Raw Input read: {raw_record}")
+                        print(f"Raw data length: {len(raw_record)}")
                     self.raw_data.put(raw_record)
                     raw_record = []
 
 
 if __name__ == "__main__":
-    serial = SerialReader(10, 4, [("utc", False), ("temp", False), ("moist", True)], r"^[0-9]+,[0-9]+$")
-    serial.read(lambda : None)
+    serial = SerialReader(10, 4, [("utc", False), ("temp", False), ("moist", True), ("risk", False)], r"^[0-9]+,[0-9]+$")
+    serial.read()
