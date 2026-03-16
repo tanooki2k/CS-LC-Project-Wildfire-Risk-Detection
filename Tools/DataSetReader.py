@@ -18,7 +18,7 @@ def read_dataset(path: str, is_digital: List[bool], is_verbose: bool = False):
     if is_verbose:
         print(*raw_data, sep="\n")
 
-    if not raw_data:
+    if not len(raw_data):
         raise ValueError("No data has been found!")
 
     print("Processing data")
