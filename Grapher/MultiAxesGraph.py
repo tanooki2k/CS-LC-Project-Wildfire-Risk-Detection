@@ -10,6 +10,7 @@ class MultiAxesGraph(MatplotlibGraph):
     __TIME_TAG = "Time (hours)"
     __TEMP_TAG = "Temperature (°C)"
     __RISK_TAG = "Risk (0% - 100%)"
+    __min_temp_ax, __max_temp_ax = 10, 40
 
     def __init__(self, fieldnames: List[str], data: List[Dict[str, Any]] = None) -> None:
         if len(fieldnames) != 4:
@@ -19,8 +20,8 @@ class MultiAxesGraph(MatplotlibGraph):
         self.ax2 = self.ax1.twinx()
         self.fieldnames = fieldnames
 
-        self.ax1.set_ylim(10, 40)
-        self.ax2.set_ylim(0, 100)
+        self.ax1.set_ylim(self.__min_temp_ax - 2.5, self.__max_temp_ax + 2.5)
+        self.ax2.set_ylim(-2.5, 102.5)
 
         self.ax1.set_xlabel(self.__TIME_TAG)
         self.ax1.set_ylabel(self.__TEMP_TAG)
@@ -29,17 +30,27 @@ class MultiAxesGraph(MatplotlibGraph):
         for record in data:
             self.new_record(record)
 
+    def adjust_temp_axis(self, new_temp):
+        if new_temp > self.__max_temp_ax:
+            self.__max_temp_ax = new_temp
+        elif new_temp < self.__min_temp_ax:
+            self.__min_temp_ax = new_temp
+
     def new_record(self, record):
         if len(record) != 4:
             raise ValueError("Argument list `record` must have length 4")
 
         new_time, new_temp, new_moist, new_risk = record.values()
+        self.adjust_temp_axis(new_temp)
+
         self.time.append(new_time)
         self.temp.append(new_temp)
         self.moist.append(new_moist)
         self.risk.append(new_risk)
 
     def plot(self):
+        self.ax1.set_ylim(self.__min_temp_ax - 2.5, self.__max_temp_ax + 2.5)
+
         temp_line, = self.ax1.plot(self.time, self.temp, label=self.__TEMP_TAG, color="orange")
         risk_line, = self.ax2.plot(self.time, self.risk, label=self.__RISK_TAG, color="blue")
 
