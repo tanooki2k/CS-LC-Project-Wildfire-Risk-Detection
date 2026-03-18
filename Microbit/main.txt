@@ -1,60 +1,43 @@
-"""
-This is just the code taken directly from Make:Code that
-the Micro:Bit (embedded system) uses.
-"""
-
 def Blink(repeat: number, delay: number):
     for index in range(repeat):
         Risk_Level_LEDs(0, 0, 0, 0)
         basic.pause(delay)
 
-
 def SoundAlarm(pitch: number, delay2: number):
     music.stop_all_sounds()
     basic.pause(10)
     music.play(music.tone_playable(pitch, music.beat(BeatFraction.WHOLE)),
-               music.PlaybackMode.IN_BACKGROUND)
+        music.PlaybackMode.IN_BACKGROUND)
     basic.pause(delay2)
     music.play(music.tone_playable(pitch, music.beat(BeatFraction.WHOLE)),
-               music.PlaybackMode.UNTIL_DONE)
-
+        music.PlaybackMode.UNTIL_DONE)
 
 def on_log_full():
     basic.show_icon(IconNames.YES)
     if input.button_is_pressed(Button.AB):
         datalogger.delete_log()
-
-
 datalogger.on_log_full(on_log_full)
-
 
 def on_button_pressed_a():
     global global_time, is_started
     global_time = input.running_time()
     is_started = True
-    OnOff_LED(1)
-
-
+    OnOff_LED(1023)
 input.on_button_pressed(Button.A, on_button_pressed_a)
 
-
 def Risk_Level_LEDs(green: number, yellow: number, orange: number, red: number):
-    pins.digital_write_pin(DigitalPin.P6, green)
-    pins.digital_write_pin(DigitalPin.P7, yellow)
-    pins.digital_write_pin(DigitalPin.P8, orange)
-    pins.digital_write_pin(DigitalPin.P9, red)
-
+    pins.analog_write_pin(AnalogPin.P3, green)
+    pins.analog_write_pin(AnalogPin.P4, yellow)
+    pins.analog_write_pin(AnalogPin.P5, orange)
+    pins.analog_write_pin(AnalogPin.P6, red)
 
 def digitliseMoisture(moistValue: number):
     if moistValue < wetnessConstant:
         return 0
     else:
         return 1
-
-
 def OnOff_LED(on: number):
-    pins.digital_write_pin(DigitalPin.P4, on)
-
+    pins.analog_write_pin(AnalogPin.P7, on)
 
 def on_button_pressed_b():
     global elapsed_time, is_started
@@ -63,10 +46,7 @@ def on_button_pressed_b():
         is_started = False
         OnOff_LED(0)
         Risk_Level_LEDs(0, 0, 0, 0)
-
-
 input.on_button_pressed(Button.B, on_button_pressed_b)
-
 
 def on_data_received():
     global state, risk
@@ -79,8 +59,6 @@ def on_data_received():
         risk = 2
     else:
         risk = 3
-
-
 serial.on_data_received(serial.delimiters(Delimiters.NEW_LINE), on_data_received)
 
 last_log_time = 0
@@ -101,23 +79,19 @@ datalogger.set_column_titles("temperature", "moisture")
 datalogger.include_timestamp(FlashLogTimeStampFormat.SECONDS)
 serial.redirect(SerialPin.USB_TX, SerialPin.USB_RX, BaudRate.BAUD_RATE115200)
 serial.redirect_to_usb()
-OnOff_LED(1)
-
+OnOff_LED(1023)
 
 def on_forever():
     if is_started:
         if risk == 0:
-            Risk_Level_LEDs(1, 0, 0, 0)
+            Risk_Level_LEDs(1023, 0, 0, 0)
         elif risk == 1:
-            Risk_Level_LEDs(1, 1, 0, 0)
+            Risk_Level_LEDs(1023, 1023, 0, 0)
         elif risk == 2:
-            Risk_Level_LEDs(1, 1, 1, 0)
+            Risk_Level_LEDs(1023, 1023, 1023, 0)
         else:
-            Risk_Level_LEDs(1, 1, 1, 1)
-
-
+            Risk_Level_LEDs(1023, 1023, 1023, 1023)
 basic.forever(on_forever)
-
 
 def on_forever2():
     global moisture, last_log_time
@@ -126,7 +100,7 @@ def on_forever2():
         serial.write_line("" + str(input.temperature()) + "," + ("" + str(moisture)))
         if input.running_time() - last_log_time > offset_data_collection_time:
             datalogger.log(datalogger.create_cv("moisture", moisture),
-                           datalogger.create_cv("temperature", input.temperature()))
+                datalogger.create_cv("temperature", input.temperature()))
             led.plot_bar_graph(input.temperature(), 0, True)
             led.plot_bar_graph(moisture, 1, True)
             last_log_time = input.running_time()
@@ -148,20 +122,14 @@ def on_forever2():
                 """)
     else:
         basic.show_icon(IconNames.NO)
-
-
 basic.forever(on_forever2)
-
 
 def on_forever3():
     if state == "high":
         SoundAlarm(523, 100)
     if state == "very high":
         SoundAlarm(659, 25)
-
-
 basic.forever(on_forever3)
-
 
 def on_forever4():
     global prev_sate
@@ -172,6 +140,4 @@ def on_forever4():
             SoundAlarm(262, 200)
         if state == "moderate":
             SoundAlarm(392, 150)
-
-
 basic.forever(on_forever4)
