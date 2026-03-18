@@ -16,7 +16,8 @@ class SerialReader(Subject):
     _observers: List[Observer] = []
     _graph_observers: List[GraphObserver] = []
 
-    def __init__(self, serial_period: float, fieldnames: List[Tuple[str, bool]], expr: str, verbose: bool = False, graph_period: float = None):
+    def __init__(self, serial_period: float, fieldnames: List[Tuple[str, bool]], expr: str, verbose: bool = False,
+                 graph_period: float = None):
         port = mb_detect.find()
 
         if port:
@@ -49,8 +50,6 @@ class SerialReader(Subject):
             graph_observer.show(can_save=True, path="Output")
 
     def process_raw_data(self) -> None:
-        start_time = time.time()
-
         while True:
             raw_record = self.raw_data.get()
             if raw_record:
@@ -59,30 +58,25 @@ class SerialReader(Subject):
                 now = datetime.datetime.now()
                 formatted = now.strftime("%Y-%m-%d %H:%M:%S")
                 if len(arrays) == len(self.__fieldnames) - 2:
-                    process_record = [formatted] + [bool(median(col)) if self.__is_digital[i+1] else int(median(col)) for i, col in enumerate(arrays)]
+                    process_record = [formatted] + [bool(median(col)) if self.__is_digital[i + 1] else int(median(col))
+                                                    for i, col in enumerate(arrays)]
                     risk_level, risk_perc = calculate_wildfire_risk(temp=process_record[1], moist=process_record[2])
                     process_record.append(int(risk_perc))
 
-                    final_record =  {key: value for key, value in zip(self.__fieldnames, process_record)}
+                    final_record = {key: value for key, value in zip(self.__fieldnames, process_record)}
                     data_str = ", ".join([f"{f}: {final_record[f]}" for f in self.__fieldnames])
                     print(f"Received record: {data_str}")
                     print(f"There is a {risk_level} wildfire risk ({int(risk_perc)}%)")
                     self.notify(final_record)
                     self.serial.write(f"{risk_level}\n".encode())
 
-            if self.graph_period is None:
-                continue
-            delta = time.time() - start_time
-            if delta > self.graph_period:
-                self.notify_graph()
-                start_time = time.time()
-
-
     def read(self):
         data_thread = Thread(target=self.process_raw_data, daemon=True)
         data_thread.start()
 
         start_time = time.time()
+        start_time_2 = time.time()
+
         raw_record = []
 
         while True:
@@ -90,7 +84,8 @@ class SerialReader(Subject):
             delta = time.time() - start_time
             if delta < self.serial_period:
                 if re.search(self.expr, line):
-                    data = [bool(int(num)) if self.__is_digital[i + 1] else int(num) for i, num in enumerate(line.split(","))]
+                    data = [bool(int(num)) if self.__is_digital[i + 1] else int(num) for i, num in
+                            enumerate(line.split(","))]
                     raw_record.append(data)
             else:
                 start_time = time.time()
@@ -100,6 +95,13 @@ class SerialReader(Subject):
                         print(f"Raw data length: {len(raw_record)}")
                     self.raw_data.put(raw_record)
                     raw_record = []
+
+            if self.graph_period is None:
+                continue
+            delta_2 = time.time() - start_time_2
+            if delta_2 > self.graph_period:
+                self.notify_graph()
+                start_time_2 = time.time()
 
 
 if __name__ == "__main__":
